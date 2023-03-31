@@ -1,0 +1,163 @@
+
+데이터베이스 (SQL) KEYWORDS
+
+  +------------------------------------------------+
+  |	SELECT [컬럼명] FROM [테이블명] ;				   |	
+  |												   |
+  |	UPDATE [테이블명] SET [변경할 값] WHERE [변경할 조건식];|
+  |												   |
+  |	DELETE FROM [테이블명];						   |
+  |												   |
+  |	INSERT INTO [테이블명] (컬럼명) VALUES (값);		   |
+  +------------------------------------------------+	
+	
+	WHERE [조건식]
+		(IN, AND, LIKE, BETWEEN ~ AND, IS NOT NULL)
+	
+	INNER JOIN [테이블명] ON [공통요소인 컬럼명]
+	
+	SELF JOIN
+		SELECT [기준 컬럼] , [본인 컬럼]
+		FROM [기준 테이블]
+		INNER JOIN [본인 테이블] ON [기준 컬럼] = [본인 컬럼]
+		;
+	
+	GROUP BY [묶을 기준이될 컬럼명]
+	
+	HAVING [별칭이아닌 함수 조건식]
+	
+	+------------------------------------------------+
+	
+	DECODE (컬럼명 , 값 , 바꿀값)
+	
+	CASE WHEN [조건식] THEN [바꿀값]
+	
+	SEQUENCE
+	
+		CREATE SEQUENCE T_SEQ   -- T_SEQ 라고 시퀀스 지정
+		INCREMENT BY 1   -- 한번 실행 할때마다 N씩증가
+		START WITH 1    -- N부터 시작한다는 의미 / 시작값
+		MINVALUE 1      --최소값
+		MAXVALUE 1000   -- 최대값
+		--CYCLE           -- 1 부터 1000 까지 한바퀴 돌고 또 돌건지
+		NOCYCLE         --  말건지
+		
+		INSERT INTO TEST_BOARD VALUES(T_SEQ.NEXTVAL , '값');
+	
+	VIEW
+	
+		CREATE VIEW [테이블명]
+		AS        
+			SELECT [컬럼들]
+			FROM [테이블명]
+			WITH READ ONLY          -- 읽기 권한만 줌 !!!! 쓰기X 삭제X 
+		;
+	
+	PLSQL
+		DECLARE
+			[변수선언]
+		BEGIN
+			[DML문]
+		EXCEPTION
+			[예외처리]
+		END;
+		
+	PROCEDURE
+		CREATE OR REPLACE PROCEDURE [프로시저명]
+		(매개변수 IN 타입)
+		IS
+			[변수선언]
+		BEGIN
+			[DML문]
+		END [프로시저명];
+		/
+		
+		EXECUTE 프로시저명 (값);
+		
+	FOR ~LOOP 문
+
+		IS
+			TYPE 변수명 IS TABLE OF 변수의 타입
+			INDEX BY BINARY_INTEGER;	-- INDEX 타입은 1,2,3 ... 이렇게되기때문에
+										-- INTEGER 로 선언 해준다.
+			배열변수 변수명;
+			
+			i BINARY_INTEGER := 0;		-- 반복문에 쓸 변수
+		BEGIN
+			FOR 다른배열변수명 IN (
+								SELECT 문
+							) LOOP
+			i := i + 1;		-- SQL 은 INDEX 가 1부터 시작
+							-- 순차적으로 1,2,3,4~~ 이런식으로 올라갈것이기때문
+			
+			배열변수(i) := 다른배열변수명.컬럼명;
+			
+			END LOOP;
+			
+			FOR CNT IN 1..I LOOP		-- 1부터 i에 갈때까지 돈다 / 출력을 위한 FOR문
+				DBMS_OUTPUT.PUT_LINE(' 출력할 것들 ' || 배열변수(CNT));
+				
+			END LOOP;
+		END;
+
+	LOOP 문
+
+		DECLARE
+			변수선언
+		BEGIN
+			LOOP
+				증가값
+			EXIT WHEN 최대값
+			END LOOP;
+		END;
+		
+	WHILE 문
+
+		DECLARE
+			변수선언
+		BEGIN
+			WHILE 최대값 LOOP
+			
+				증가값
+				
+			END LOOP;
+		END;
+		
+	CURSOR	
+	
+		SQL%ROWCOUNT : SQL 실행 후 영향받은 행의 수
+		SQL%FOUND : SQL 실행 후 영향받은 행이 있을 경우 TRUE 리턴
+		SQL%NOTFOUND : SQL 실행 후 영향받은 행이 없을 경우 TRUE 리턴
+		
+		1. 커서 선언 -> CURSOR 커서명
+			CURSOR 커서명 IS SELECT 속성 FROM 테이블
+		2. 커서 열기 -> OPEN 커서명
+			OPEN 커서명
+		3. 데이터 추출 -> FETCH 커서명
+			FETCH 커서명 INTO 변수
+		4. 커서 종료 -> CLOSE 커서명
+			CLOSE 커서명
+				
+	TRIGGER
+	
+		CREATE OR REPLACE TRIGGER [트리거명]
+			BEFORE / AFTER
+			UPDATE OR INSERT OR DELETE ON [테이블명]
+			FOR EACH ROW
+		BEGIN
+			DBMS_OUTPUT.PUT_LINE('변경 전 컬럼 값 : ' || :OLD.컬럼명 );
+			DBMS_OUTPUT.PUT_LINE('변경 후 컬럼 값 : ' || :NEW.컬럼명 );
+		END;
+		
++--------------------------------------------------------------------+
+		
+자주쓰이는 함수	
+
+	COUNT(*)  =  행의 갯수
+	AVG(컬럼명) = 컬럼의 평균
+	SUM(컬럼명) = 컬럼의 전체값
+	ROUND(컬럼명 , n) = n번째 소수점까지 출력
+	MAX(컬럼명) = 컬럼의 최대값
+	MIN(컬럼명) = 컬럼의 최소값
+	
+	TO_CHAR()
